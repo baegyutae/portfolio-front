@@ -1,28 +1,48 @@
 import React from "react";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-
-const theme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
+import {
+  Container,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  AppBar,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 
 function App() {
+  let posts = [
+    {
+      id: 1,
+      title: "첫 번째 게시글",
+      content: "이것은 첫 번째 게시글의 내용입니다.",
+      createdAt: "2024-02-26",
+    },
+    {
+      id: 2,
+      title: "두 번째 게시글",
+      content: "여기에는 두 번째 게시글에 대한 내용이 들어갑니다.",
+      createdAt: "2024-02-27",
+    },
+  ];
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBar position="static">
+    <Container maxWidth="lg">
+      <AppBar position="static" style={{ background: "black", color: "white" }}>
         <Toolbar>
-          <Typography variant="h6" color="inherit">
-            게시판
-          </Typography>
+          <Typography variant="h6">게시판</Typography>
         </Toolbar>
       </AppBar>
-    </ThemeProvider>
+      <Paper style={{ margin: "24px", padding: "24px" }}>
+        <List>
+          {posts.map((post) => (
+            <ListItem button key={post.id} onClick={() => alert("게시글 클릭")}>
+              <ListItemText primary={post.title} secondary={post.content} />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+    </Container>
   );
 }
 
