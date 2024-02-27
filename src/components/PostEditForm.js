@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Grid, TextField, Button } from "@mui/material";
 
 const PostEditForm = () => {
   const [post, setPost] = useState({ title: "", content: "" });
@@ -42,20 +43,33 @@ const PostEditForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>
-        제목:
-        <input
-          type="text"
-          name="title"
-          value={post.title}
-          onChange={handleChange}
-        />
-      </label>
-      <label>
-        내용:
-        <textarea name="content" value={post.content} onChange={handleChange} />
-      </label>
-      <button type="submit">수정 완료</button>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="제목"
+            name="title"
+            value={post.title}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            multiline
+            rows={6}
+            label="내용"
+            name="content"
+            value={post.content}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button type="submit" variant="contained" color="primary">
+            수정 완료
+          </Button>
+        </Grid>
+      </Grid>
     </form>
   );
 };

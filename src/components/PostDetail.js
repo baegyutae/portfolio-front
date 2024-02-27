@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Grid, Typography, Button } from "@mui/material";
 
 const PostDetail = () => {
   const [post, setPost] = useState(null);
@@ -41,12 +42,24 @@ const PostDetail = () => {
   if (!post) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h2>{post.title}</h2>
-      <p>{post.content}</p>
-      <button onClick={handleEdit}>수정</button>
-      <button onClick={handleDelete}>삭제</button>
-    </div>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Typography variant="h2">{post.title}</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="body1">{post.content}</Typography>
+      </Grid>
+      <Grid item xs={6}>
+        <Button variant="contained" color="primary" onClick={handleEdit}>
+          수정
+        </Button>
+      </Grid>
+      <Grid item xs={6}>
+        <Button variant="contained" color="error" onClick={handleDelete}>
+          삭제
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 

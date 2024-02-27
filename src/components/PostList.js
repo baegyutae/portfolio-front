@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Grid, Typography } from "@mui/material";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -13,17 +14,19 @@ const PostList = () => {
 
   return (
     <div>
-      <h2>게시글 목록</h2>
-      <ul>
+      <Typography variant="h2">게시글 목록</Typography>
+      <Grid container spacing={2}>
         {posts.map((post) => (
-          <li key={post.id}>
-            <h3>
+          <Grid item xs={12} key={post.id}>
+            <Typography variant="h3">
               <Link to={`/posts/${post.id}`}>{post.title}</Link>
-            </h3>
-            <p>{post.content.substring(0, 100)}...</p>
-          </li>
+            </Typography>
+            <Typography variant="body1">
+              {post.content.substring(0, 100)}...
+            </Typography>
+          </Grid>
         ))}
-      </ul>
+      </Grid>
     </div>
   );
 };
