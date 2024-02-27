@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Paper, Box } from "@mui/material";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -13,21 +13,34 @@ const PostList = () => {
   }, []);
 
   return (
-    <div>
-      <Typography variant="h2">게시글 목록</Typography>
-      <Grid container spacing={2}>
+    <Box sx={{ flexGrow: 1, margin: 4 }}>
+      <Typography variant="h2" gutterBottom>
+        게시글 목록
+      </Typography>
+      <Grid container spacing={3}>
         {posts.map((post) => (
-          <Grid item xs={12} key={post.id}>
-            <Typography variant="h3">
-              <Link to={`/posts/${post.id}`}>{post.title}</Link>
-            </Typography>
-            <Typography variant="body1">
-              {post.content.substring(0, 100)}...
-            </Typography>
+          <Grid item xs={12} sm={6} md={4} key={post.id}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
+              <Typography
+                variant="h5"
+                component={Link}
+                to={`/posts/${post.id}`}
+                sx={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  ":hover": { textDecoration: "underline" },
+                }}
+              >
+                {post.title}
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                {post.content.substring(0, 100)}...
+              </Typography>
+            </Paper>
           </Grid>
         ))}
       </Grid>
-    </div>
+    </Box>
   );
 };
 
