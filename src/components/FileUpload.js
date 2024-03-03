@@ -29,10 +29,31 @@ function FileUploadComponent() {
     }
   };
 
+  // 프리사인드 URL을 사용하여 파일을 S3에 업로드
   const handleUpload = async () => {
     if (!selectedFile) {
       alert("파일을 선택해 주세요.");
       return;
+    }
+
+    try {
+      const presignedUrl = await requestPresignedUrl(selectedFile.name);
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        body: selectedFile,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (uploadResponse.ok) {
+        alert("파일 업로드 성공!");
+      } else {
+        alert("파일 업로드 실패.");
+      }
+    } catch (error) {
+      console.error("파일 업로드 중 오류 발생:", error);
+      alert("파일 업로드 실패.");
     }
   };
 
@@ -45,4 +66,4 @@ function FileUploadComponent() {
   );
 }
 
-export default FileUploadComponent;
+export default FileUpload;
