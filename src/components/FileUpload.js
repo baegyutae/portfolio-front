@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function FileUploadComponent() {
+function FileUpload() {
   // 파일 상태 관리
   const [selectedFile, setSelectedFile] = useState(null);
 

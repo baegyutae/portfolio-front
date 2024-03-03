@@ -6,6 +6,7 @@ import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
 import PostDetail from "./components/PostDetail";
 import PostEditForm from "./components/PostEditForm";
+import FileUpload from "./components/FileUpload";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/create" element={<PostForm />} />
           <Route path="/posts/:postId" element={<PostDetail />} />
           <Route path="/posts/edit/:postId" element={<PostEditForm />} />
+          <Route path="/upload" element={<FileUpload />} />
         </Routes>
       </ThemeProvider>
     </Router>
