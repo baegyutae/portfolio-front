@@ -11,6 +11,8 @@ import {
   DialogTitle,
   Snackbar,
   Box,
+  Card,
+  CardMedia,
 } from "@mui/material";
 
 const PostDetail = () => {
@@ -102,6 +104,11 @@ const PostDetail = () => {
         <Typography variant="body1" paragraph>
           {post.content}
         </Typography>
+        {post.imageUrl && (
+          <Card>
+            <CardMedia component="img" image={post.imageUrl} alt="Post image" />
+          </Card>
+        )}
         <Grid container spacing={2} justifyContent="flex-end">
           <Grid item>
             <Button variant="contained" color="primary" onClick={handleEdit}>
