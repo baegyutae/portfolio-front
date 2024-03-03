@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import FileUpload from "./FileUpload";
 import {
   Grid,
   TextField,
@@ -78,6 +79,9 @@ const PostForm = () => {
                 value={post.content}
                 onChange={handleChange}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <FileUpload />
             </Grid>
             <Grid item xs={12}>
               <Button
