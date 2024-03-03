@@ -11,13 +11,29 @@ function FileUploadComponent() {
     setSelectedFile(file);
   };
 
-  // 파일 업로드 로직 (추후 구현)
+  // 백엔드로부터 프리사인드 URL 요청
+  const requestPresignedUrl = async (fileName) => {
+    try {
+      const response = await fetch("/api/upload/presigned-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fileName }),
+      });
+      const data = await response.json();
+      return data.presignedUrl;
+    } catch (error) {
+      console.error("프리사인드 URL 요청 실패:", error);
+      throw error;
+    }
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) {
       alert("파일을 선택해 주세요.");
       return;
     }
-    // 프리사인드 URL 요청 및 파일 업로드 로직 구현 예정
   };
 
   return (
