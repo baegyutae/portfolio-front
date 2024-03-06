@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import FileUpload from "./FileUpload";
 import {
   Grid,
   TextField,
@@ -13,6 +12,7 @@ import {
 
 const PostForm = () => {
   const [post, setPost] = useState({ title: "", content: "" });
+  const [selectedFile, setSelectedFile] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const navigate = useNavigate();
 
@@ -21,35 +21,45 @@ const PostForm = () => {
     setPost((prevPost) => ({ ...prevPost, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    fetch("http://localhost:8080/posts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(post),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
+    const formData = new FormData();
+    formData.append(
+      "postCreateDto",
+      new Blob([JSON.stringify({ title: post.title, content: post.content })], {
+        type: "application/json",
       })
-      .then((data) => {
+    );
+    if (selectedFile) {
+      formData.append("file", selectedFile);
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/posts", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
         setSnackbar({
           open: true,
           message: "게시글이 성공적으로 작성되었습니다.",
         });
         navigate("/");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setSnackbar({
-          open: true,
-          message: "게시글 작성 과정에서 오류가 발생했습니다.",
-        });
+      } else {
+        throw new Error("게시글 작성 실패");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setSnackbar({
+        open: true,
+        message: "게시글 작성 과정에서 오류가 발생했습니다.",
       });
+    }
   };
 
   return (
@@ -58,7 +68,7 @@ const PostForm = () => {
         <Typography variant="h6" gutterBottom component="div">
           새 게시글 작성
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -81,7 +91,7 @@ const PostForm = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <FileUpload />
+              <input type="file" onChange={handleFileChange} />
             </Grid>
             <Grid item xs={12}>
               <Button

@@ -1,66 +1,75 @@
 import React, { useState } from "react";
 
 function FileUpload() {
-  // 파일 상태 관리
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // 파일 선택 이벤트 핸들러
-  const handleFileChange = (event) => {
-    // 사용자가 파일을 선택한 경우, 선택된 파일 정보를 상태로 설정
-    const file = event.target.files[0];
-    setSelectedFile(file);
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
   };
 
-  // 백엔드로부터 프리사인드 URL 요청
-  const requestPresignedUrl = async (fileName) => {
+  const handleContentChange = (e) => {
+    setContent(e.target.value);
+  };
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append(
+      "postCreateDto",
+      new Blob([JSON.stringify({ title, content })], {
+        type: "application/json",
+      })
+    );
+    if (selectedFile) {
+      formData.append("file", selectedFile);
+    }
+
+    // 백엔드로 FormData 전송
     try {
-      const response = await fetch("/api/upload/presigned-url", {
+      const response = await fetch("http://localhost:8080/posts", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fileName }),
-      });
-      const data = await response.json();
-      return data.presignedUrl;
-    } catch (error) {
-      console.error("프리사인드 URL 요청 실패:", error);
-      throw error;
-    }
-  };
-
-  // 프리사인드 URL을 사용하여 파일을 S3에 업로드
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      alert("파일을 선택해 주세요.");
-      return;
-    }
-
-    try {
-      const presignedUrl = await requestPresignedUrl(selectedFile.name);
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        body: selectedFile,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        body: formData,
+        // Content-Type 헤더를 설정하지 않음으로써, 브라우저가 자동으로 multipart/form-data 경계를 설정할 수 있게 함
       });
 
-      if (uploadResponse.ok) {
-        alert("파일 업로드 성공!");
+      if (response.ok) {
+        const responseData = await response.json();
+        alert("게시글이 성공적으로 작성되었습니다.");
+        // 성공적으로 게시글이 생성된 후 필요한 동작 (예: 페이지 리디렉션)
       } else {
-        alert("파일 업로드 실패.");
+        alert("게시글 작성에 실패했습니다.");
       }
     } catch (error) {
-      console.error("파일 업로드 중 오류 발생:", error);
-      alert("파일 업로드 실패.");
+      console.error("Error:", error);
+      alert("게시글 작성 중 오류가 발생했습니다.");
     }
   };
 
   return (
     <div>
-      <input type="file" onChange={handleFileChange} />
-      {selectedFile && <div>Selected file: {selectedFile.name}</div>}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="제목"
+          value={title}
+          onChange={handleTitleChange}
+        />
+        <textarea
+          placeholder="내용"
+          value={content}
+          onChange={handleContentChange}
+        />
+        <input type="file" onChange={handleFileChange} />
+        <button type="submit">게시글 작성</button>
+      </form>
     </div>
   );
 }
