@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Grid,
@@ -27,6 +27,12 @@ const PostForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 로컬 스토리지에서 인증 토큰 가져오기
+    const token = localStorage.getItem("auth")
+      ? JSON.parse(localStorage.getItem("auth")).token
+      : null;
+
     const formData = new FormData();
     formData.append(
       "postCreateDto",
@@ -39,9 +45,13 @@ const PostForm = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/posts", {
+      const response = await fetch("http://localhost:8080/api/posts", {
         method: "POST",
         body: formData,
+        headers: {
+          // 요청 헤더에 인증 토큰 추가
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
