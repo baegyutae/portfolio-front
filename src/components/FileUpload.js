@@ -34,7 +34,7 @@ function FileUpload() {
 
     // 백엔드로 FormData 전송
     try {
-      const response = await fetch("http://localhost:8080/posts", {
+      const response = await fetch("http://localhost:8080/api/posts", {
         method: "POST",
         body: formData,
         // Content-Type 헤더를 설정하지 않음으로써, 브라우저가 자동으로 multipart/form-data 경계를 설정할 수 있게 함

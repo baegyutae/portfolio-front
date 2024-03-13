@@ -19,7 +19,7 @@ const PostEditForm = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:8080/posts/${postId}`)
+    fetch(`http://localhost:8080/api/posts/${postId}`)
       .then((response) => response.json())
       .then((data) => {
         setPost({ title: data.title, content: data.content });
@@ -43,7 +43,7 @@ const PostEditForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    fetch(`http://localhost:8080/posts/${postId}`, {
+    fetch(`http://localhost:8080/api/posts/${postId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

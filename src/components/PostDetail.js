@@ -25,7 +25,7 @@ const PostDetail = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:8080/posts/${postId}`)
+    fetch(`http://localhost:8080/api/posts/${postId}`)
       .then((response) => response.json())
       .then((data) => {
         setPost(data);
@@ -50,7 +50,7 @@ const PostDetail = () => {
   };
 
   const handleDelete = () => {
-    fetch(`http://localhost:8080/posts/${postId}`, {
+    fetch(`http://localhost:8080/api/posts/${postId}`, {
       method: "DELETE",
     })
       .then((response) => {
