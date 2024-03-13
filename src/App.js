@@ -7,22 +7,33 @@ import PostForm from "./components/PostForm";
 import PostDetail from "./components/PostDetail";
 import PostEditForm from "./components/PostEditForm";
 import FileUpload from "./components/FileUpload";
+import LoginForm from "./components/LoginForm";
+import SignupForm from "./components/SignupForm";
+import { AuthProvider } from "./components/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <Router>
-      <ThemeProvider theme={theme}>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<PostList />} />
-          <Route path="/create" element={<PostForm />} />
-          <Route path="/posts/:postId" element={<PostDetail />} />
-          <Route path="/posts/edit/:postId" element={<PostEditForm />} />
-          <Route path="/upload" element={<FileUpload />} />
-        </Routes>
-      </ThemeProvider>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <Navbar />
+          <Routes>
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/signup" element={<SignupForm />} />
+            <Route path="/" element={<PrivateRoute />}>
+              <Route path="/" element={<PostList />} />
+              <Route path="/create" element={<PostForm />} />
+              <Route path="/posts/:postId" element={<PostDetail />} />
+              <Route path="/posts/edit/:postId" element={<PostEditForm />} />
+              <Route path="/upload" element={<FileUpload />} />
+              <Route path="/postlist" element={<PostList />} />
+            </Route>
+          </Routes>
+        </ThemeProvider>
+      </Router>
+    </AuthProvider>
   );
 }
 
