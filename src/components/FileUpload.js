@@ -20,7 +20,9 @@ function FileUpload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // FormData 객체 생성
+    // 로컬 스토리지에서 토큰 가져오기
+    const token = localStorage.getItem("token");
+
     const formData = new FormData();
     formData.append(
       "postCreateDto",
@@ -32,16 +34,17 @@ function FileUpload() {
       formData.append("file", selectedFile);
     }
 
-    // 백엔드로 FormData 전송
     try {
       const response = await fetch("http://localhost:8080/api/posts", {
         method: "POST",
         body: formData,
-        // Content-Type 헤더를 설정하지 않음으로써, 브라우저가 자동으로 multipart/form-data 경계를 설정할 수 있게 함
+        headers: {
+          // 인증 토큰 포함
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
       });
 
       if (response.ok) {
-        const responseData = await response.json();
         alert("게시글이 성공적으로 작성되었습니다.");
         // 성공적으로 게시글이 생성된 후 필요한 동작 (예: 페이지 리디렉션)
       } else {
