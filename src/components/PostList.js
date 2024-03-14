@@ -7,9 +7,7 @@ const PostList = () => {
 
   useEffect(() => {
     // 로컬 스토리지에서 인증 토큰 가져오기
-    const token = localStorage.getItem("auth")
-      ? JSON.parse(localStorage.getItem("auth")).token
-      : null;
+    const token = localStorage.getItem("token");
 
     // 인증 토큰이 있는 경우에만 API 요청을 수행
     if (token) {
