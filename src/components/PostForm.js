@@ -28,10 +28,7 @@ const PostForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 로컬 스토리지에서 인증 토큰 가져오기
-    const token = localStorage.getItem("auth")
-      ? JSON.parse(localStorage.getItem("auth")).token
-      : null;
+    const token = localStorage.getItem("token"); // 수정된 부분: 토큰을 localStorage에서 직접 가져옴
 
     const formData = new FormData();
     formData.append(
@@ -49,8 +46,7 @@ const PostForm = () => {
         method: "POST",
         body: formData,
         headers: {
-          // 요청 헤더에 인증 토큰 추가
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // 수정된 부분: 요청 헤더에 인증 토큰 추가
         },
       });
 
@@ -59,7 +55,7 @@ const PostForm = () => {
           open: true,
           message: "게시글이 성공적으로 작성되었습니다.",
         });
-        navigate("/");
+        navigate("/postlist");
       } else {
         throw new Error("게시글 작성 실패");
       }
