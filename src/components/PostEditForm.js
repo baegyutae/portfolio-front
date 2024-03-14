@@ -18,8 +18,13 @@ const PostEditForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem("token"); // 여기에서 token을 정의합니다.
     setLoading(true);
-    fetch(`http://localhost:8080/api/posts/${postId}`)
+    fetch(`http://localhost:8080/api/posts/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // 인증 토큰 포함
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
         setPost({ title: data.title, content: data.content });
@@ -33,7 +38,7 @@ const PostEditForm = () => {
           message: "게시글 정보를 불러오는 데 실패했습니다.",
         });
       });
-  }, [postId]);
+  }, [postId]); // token을 의존성 배열에서 제거합니다.
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,11 +47,13 @@ const PostEditForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token"); // 여기에서도 token을 정의합니다.
     setLoading(true);
     fetch(`http://localhost:8080/api/posts/${postId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // 인증 토큰 포함
       },
       body: JSON.stringify(post),
     })
@@ -69,21 +76,6 @@ const PostEditForm = () => {
       })
       .finally(() => setLoading(false));
   };
-
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <Paper elevation={3} sx={{ p: 4, margin: "auto", maxWidth: 600, mt: 4 }}>
