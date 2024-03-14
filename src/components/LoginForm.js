@@ -20,18 +20,15 @@ function LoginForm() {
           password,
         }),
       });
-
-      const authHeader = response.headers.get("Authorization");
+      const data = await response.json(); // 응답 데이터를 JSON 형태로 파싱
       if (response.ok) {
-        // 응답 헤더에서 토큰 추출
-        const token = authHeader.split(" ")[1];
-        // 로컬 스토리지에 토큰 저장
-        localStorage.setItem("token", token);
+        // 응답 바디에서 토큰 추출하여 로컬 스토리지에 저장
+        const token = data.token;
+        localStorage.setItem("token", `${token}`);
         navigate("/postlist"); // 로그인 성공 후 게시글 목록 페이지로 리다이렉션
       } else {
-        // 에러 메시지가 응답 바디에 있을 경우 응답 바디에서 메시지를 추출
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
+        // 로그인 실패 시 에러 메시지 표시
+        throw new Error(data.error || "Login failed");
       }
     } catch (error) {
       console.error("Login failed:", error.message);
@@ -50,7 +47,7 @@ function LoginForm() {
         }}
       >
         <Typography component="h1" variant="h5">
-          Sign in
+          로그인
         </Typography>
         <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -83,7 +80,15 @@ function LoginForm() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign In
+            로그인
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 1, mb: 2 }}
+            onClick={() => navigate("/signup")}
+          >
+            회원가입
           </Button>
         </Box>
       </Box>
