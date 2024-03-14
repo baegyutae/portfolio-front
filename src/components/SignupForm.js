@@ -1,15 +1,24 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 추가
-import { TextField, Button, Container, Typography, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Box,
+  FormHelperText,
+} from "@mui/material";
 
 function SignupForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // navigate 함수 사용
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors({}); // 폼 제출 시 오류 초기화
     try {
       const response = await fetch("http://localhost:8080/api/user/signup", {
         method: "POST",
@@ -23,14 +32,27 @@ function SignupForm() {
         }),
       });
       if (response.ok) {
-        // 회원가입 성공 시 로그인 페이지로 리다이렉트
+        // 회원가입 성공 메시지 표시 후 로그인 페이지로 이동
+        alert("회원가입 성공! 로그인 페이지로 이동합니다.");
         navigate("/login");
       } else {
+        // 서버로부터 받은 오류 메시지 처리
         const errorData = await response.json();
-        console.error("Signup failed:", errorData);
+        if (errorData.errors) {
+          // 오류 메시지가 여러 개인 경우(예: Validation 오류)
+          const formattedErrors = {};
+          errorData.errors.forEach((error) => {
+            formattedErrors[error.field] = error.defaultMessage;
+          });
+          setErrors(formattedErrors);
+        } else {
+          // 단일 오류 메시지 처리(예: 사용자 정의 오류 메시지)
+          setErrors({ general: errorData.message });
+        }
       }
     } catch (error) {
       console.error("Signup failed:", error);
+      setErrors({ general: "네트워크 오류로 회원가입에 실패했습니다." });
     }
   };
 
@@ -47,7 +69,7 @@ function SignupForm() {
         <Typography component="h1" variant="h5">
           회원가입
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -59,6 +81,8 @@ function SignupForm() {
             autoFocus
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            error={!!errors.username}
+            helperText={errors.username}
           />
           <TextField
             margin="normal"
@@ -70,6 +94,8 @@ function SignupForm() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={!!errors.email}
+            helperText={errors.email}
           />
           <TextField
             margin="normal"
@@ -82,6 +108,8 @@ function SignupForm() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={!!errors.password}
+            helperText={errors.password}
           />
           <Button
             type="submit"
@@ -91,6 +119,9 @@ function SignupForm() {
           >
             회원가입
           </Button>
+          {errors.general && (
+            <FormHelperText error>{errors.general}</FormHelperText>
+          )}
         </Box>
       </Box>
     </Container>
