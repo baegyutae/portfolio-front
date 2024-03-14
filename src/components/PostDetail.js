@@ -25,7 +25,13 @@ const PostDetail = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:8080/api/posts/${postId}`)
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:8080/api/posts/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // 수정된 부분: 직접 토큰을 사용
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
         setPost(data);
@@ -50,8 +56,13 @@ const PostDetail = () => {
   };
 
   const handleDelete = () => {
+    const token = localStorage.getItem("token");
+
     fetch(`http://localhost:8080/api/posts/${postId}`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`, // 수정된 부분: 직접 토큰을 사용
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -61,7 +72,7 @@ const PostDetail = () => {
           open: true,
           message: "게시글이 성공적으로 삭제되었습니다.",
         });
-        navigate("/");
+        navigate("/postlist");
       })
       .catch((error) => {
         console.error("Error:", error);
