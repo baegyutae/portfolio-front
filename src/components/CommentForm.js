@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Grid } from "@mui/material";
 
 function CommentForm({ postId, onCommentPosted }) {
   const [comment, setComment] = useState("");
@@ -36,22 +36,32 @@ function CommentForm({ postId, onCommentPosted }) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
-      <TextField
-        fullWidth
-        label="댓글 추가..."
-        value={comment}
-        onChange={handleCommentChange}
-        multiline
-        rows={4}
-        variant="outlined"
-        sx={{ mb: 2 }}
-      />
-      <Button type="submit" variant="contained" color="primary">
-        댓글 작성
-      </Button>
-    </Box>
+    <Grid
+      container
+      component="form"
+      onSubmit={handleSubmit}
+      noValidate
+      spacing={2}
+    >
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="댓글 추가..."
+          value={comment}
+          onChange={handleCommentChange}
+          multiline
+          rows={4}
+          variant="outlined"
+        />
+      </Grid>
+      <Grid item>
+        <Button type="submit" variant="contained" color="primary">
+          댓글 작성
+        </Button>
+      </Grid>
+    </Grid>
   );
+
 }
 
 export default CommentForm;
