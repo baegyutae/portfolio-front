@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CommentForm from "../components/CommentForm";
+import CommentEditForm from "../components/CommentEditForm";
 import {
   Grid,
   Typography,
@@ -66,6 +67,29 @@ const PostDetail = () => {
       setSnackbar({ open: true, message: error.message });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateComment = async (commentId, updatedContent) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/comments/${commentId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ content: updatedContent }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to update comment.");
+
+      fetchPostDetails(); // 댓글 수정 후 댓글 목록을 새로고침
+    } catch (error) {
+      console.error("Error updating comment:", error);
     }
   };
 
@@ -177,17 +201,15 @@ const PostDetail = () => {
           댓글
         </Typography>
         {comments.map((comment) => (
-          <Box
+          <CommentEditForm
             key={comment.id}
-            sx={{ paddingBottom: 2, borderBottom: "1px solid #ccc" }}
-          >
-            <Typography variant="subtitle2">{comment.username}</Typography>
-            <Typography variant="body2">{comment.content}</Typography>
-          </Box>
+            comment={comment}
+            onUpdateComment={updateComment}
+          />
         ))}
         <CommentForm
           postId={postId}
-          onCommentPosted={() => fetchPostDetails()}
+          onCommentPosted={() => fetchPostDetails(postId)} // 댓글 작성 후 댓글 목록을 새로고침
         />
       </Box>
 
