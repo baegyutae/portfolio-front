@@ -6,28 +6,25 @@ const PostList = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    // 로컬 스토리지에서 인증 토큰 가져오기
-    const token = localStorage.getItem("token");
-
-    // 인증 토큰이 있는 경우에만 API 요청을 수행
-    if (token) {
-      fetch("http://localhost:8080/api/posts", {
+    const fetchPosts = async () => {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8080/api/posts", {
         method: "GET",
         headers: {
-          // 요청 헤더에 인증 토큰 추가
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => setPosts(data))
-        .catch((error) => console.error("Error fetching posts:", error));
-    }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPosts(data); // 게시글 목록 상태 업데이트
+      } else {
+        throw new Error("Network response was not ok");
+      }
+    };
+
+    fetchPosts().catch((error) =>
+      console.error("Error fetching posts:", error.message)
+    );
   }, []);
 
   return (
