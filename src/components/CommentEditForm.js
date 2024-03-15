@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography, Card, Grid } from "@mui/material";
 
-function CommentEditForm({ comment, onUpdateComment }) {
+function CommentEditForm({ comment, onUpdateComment, onDeleteComment }) {
   const [editedContent, setEditedContent] = useState(comment.content);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -56,6 +56,13 @@ function CommentEditForm({ comment, onUpdateComment }) {
           <Grid item xs={12} sm={2} textAlign="right">
             <Button size="small" onClick={handleEditToggle}>
               수정
+            </Button>
+            <Button
+              size="small"
+              color="error"
+              onClick={() => onDeleteComment(comment.id)}
+            >
+              삭제
             </Button>
           </Grid>
         )}
