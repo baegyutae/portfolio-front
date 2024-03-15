@@ -70,31 +70,50 @@ const PostDetail = () => {
     }
   };
 
-const updateComment = async (commentId, updatedContent) => {
-  const token = localStorage.getItem("token");
-  try {
+  const updateComment = async (commentId, updatedContent) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/posts/${postId}/comments/${commentId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ content: updatedContent }),
+        }
+      );
 
-    const response = await fetch(
-      `http://localhost:8080/api/posts/${postId}/comments/${commentId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ content: updatedContent }),
-      }
-    );
+      if (!response.ok) throw new Error("Failed to update comment.");
 
-    if (!response.ok) throw new Error("Failed to update comment.");
+      // 댓글 수정 후 댓글 목록을 새로고침
+      fetchPostDetails();
+    } catch (error) {
+      console.error("Error updating comment:", error);
+    }
+  };
 
-    // 댓글 수정 후 댓글 목록을 새로고침
-    fetchPostDetails();
-  } catch (error) {
-    console.error("Error updating comment:", error);
-  }
-};
+  const deleteComment = async (commentId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/posts/${postId}/comments/${commentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      if (!response.ok) throw new Error("Failed to delete comment.");
+
+      fetchPostDetails(); // 댓글 삭제 후 댓글 목록을 새로고침
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
 
   useEffect(() => {
     fetchPostDetails();
@@ -208,6 +227,7 @@ const updateComment = async (commentId, updatedContent) => {
             key={comment.id}
             comment={comment}
             onUpdateComment={updateComment}
+            onDeleteComment={deleteComment}
           />
         ))}
         <CommentForm
