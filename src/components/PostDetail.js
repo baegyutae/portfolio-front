@@ -70,28 +70,31 @@ const PostDetail = () => {
     }
   };
 
-  const updateComment = async (commentId, updatedContent) => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/comments/${commentId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ content: updatedContent }),
-        }
-      );
+const updateComment = async (commentId, updatedContent) => {
+  const token = localStorage.getItem("token");
+  try {
 
-      if (!response.ok) throw new Error("Failed to update comment.");
+    const response = await fetch(
+      `http://localhost:8080/api/posts/${postId}/comments/${commentId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content: updatedContent }),
+      }
+    );
 
-      fetchPostDetails(); // 댓글 수정 후 댓글 목록을 새로고침
-    } catch (error) {
-      console.error("Error updating comment:", error);
-    }
-  };
+    if (!response.ok) throw new Error("Failed to update comment.");
+
+    // 댓글 수정 후 댓글 목록을 새로고침
+    fetchPostDetails();
+  } catch (error) {
+    console.error("Error updating comment:", error);
+  }
+};
+
 
   useEffect(() => {
     fetchPostDetails();
