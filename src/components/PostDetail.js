@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import CommentForm from "../components/CommentForm";
 import {
   Grid,
   Typography,
@@ -17,30 +18,59 @@ import {
 
 const PostDetail = () => {
   const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState([]); // 댓글 목록을 저장할 상태
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const { postId } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchPostDetails = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:8080/api/posts/${postId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`, // 수정된 부분: 직접 토큰을 사용
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setPost(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching post details:", error);
-        setLoading(false);
-      });
+    try {
+      // 게시글 정보 로드
+      const postResponse = await fetch(
+        `http://localhost:8080/api/posts/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const postData = await postResponse.json();
+      if (postResponse.ok) {
+        setPost(postData);
+      } else {
+        throw new Error("Failed to load post");
+      }
+
+      // 댓글 목록 로드
+      const commentsResponse = await fetch(
+        `http://localhost:8080/api/posts/${postId}/comments`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const commentsData = await commentsResponse.json();
+      if (commentsResponse.ok) {
+        setComments(commentsData);
+      } else {
+        throw new Error("Failed to load comments");
+      }
+    } catch (error) {
+      console.error(error);
+      setSnackbar({ open: true, message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPostDetails();
   }, [postId]);
 
   const handleEdit = () => {
@@ -55,35 +85,28 @@ const PostDetail = () => {
     setOpenDeleteDialog(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:8080/api/posts/${postId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`, // 수정된 부분: 직접 토큰을 사용
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("게시글 삭제에 실패했습니다.");
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/posts/${postId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-        setSnackbar({
-          open: true,
-          message: "게시글이 성공적으로 삭제되었습니다.",
-        });
-        navigate("/postlist");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setSnackbar({
-          open: true,
-          message: "삭제 과정에서 오류가 발생했습니다.",
-        });
-      })
-      .finally(() => {
-        setOpenDeleteDialog(false);
-      });
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete the post");
+      }
+      navigate("/postlist");
+      setSnackbar({ open: true, message: "Post successfully deleted" });
+    } catch (error) {
+      console.error("Error:", error);
+      setSnackbar({ open: true, message: error.message });
+    }
   };
 
   if (loading) {
@@ -116,11 +139,21 @@ const PostDetail = () => {
           {post.content}
         </Typography>
         {post.imageUrl && (
-          <Card>
-            <CardMedia component="img" image={post.imageUrl} alt="Post image" />
+          <Card sx={{ marginTop: 2 }}>
+            <CardMedia
+              component="img"
+              height="194"
+              image={post.imageUrl}
+              alt="Post image"
+            />
           </Card>
         )}
-        <Grid container spacing={2} justifyContent="flex-end">
+        <Grid
+          container
+          spacing={2}
+          justifyContent="flex-end"
+          sx={{ marginTop: 2 }}
+        >
           <Grid item>
             <Button variant="contained" color="primary" onClick={handleEdit}>
               수정
@@ -137,6 +170,27 @@ const PostDetail = () => {
           </Grid>
         </Grid>
       </Paper>
+
+      {/* 댓글 목록 */}
+      <Box sx={{ margin: "auto", maxWidth: 800, marginTop: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          댓글
+        </Typography>
+        {comments.map((comment) => (
+          <Box
+            key={comment.id}
+            sx={{ paddingBottom: 2, borderBottom: "1px solid #ccc" }}
+          >
+            <Typography variant="subtitle2">{comment.username}</Typography>
+            <Typography variant="body2">{comment.content}</Typography>
+          </Box>
+        ))}
+        <CommentForm
+          postId={postId}
+          onCommentPosted={() => fetchPostDetails()}
+        />
+      </Box>
+
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
         <DialogTitle>{"이 게시글을 삭제하시겠습니까?"}</DialogTitle>
         <DialogActions>
@@ -146,6 +200,7 @@ const PostDetail = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
