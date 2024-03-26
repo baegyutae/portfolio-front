@@ -28,7 +28,7 @@ const PostForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("token"); // 수정된 부분: 토큰을 localStorage에서 직접 가져옴
+    const token = localStorage.getItem("token");
 
     const formData = new FormData();
     formData.append(
@@ -42,13 +42,16 @@ const PostForm = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/posts", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`, // 수정된 부분: 요청 헤더에 인증 토큰 추가
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         setSnackbar({
@@ -69,56 +72,46 @@ const PostForm = () => {
   };
 
   return (
-    <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-      <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 600 }}>
-        <Typography variant="h6" gutterBottom component="div">
-          새 게시글 작성
-        </Typography>
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="제목"
-                name="title"
-                value={post.title}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={6}
-                label="내용"
-                name="content"
-                value={post.content}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <input type="file" onChange={handleFileChange} />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-              >
-                게시글 작성
-              </Button>
-            </Grid>
+    <Paper elevation={3} sx={{ p: 4, margin: "auto", maxWidth: 600, mt: 4 }}>
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="제목"
+              name="title"
+              value={post.title}
+              onChange={handleChange}
+            />
           </Grid>
-        </form>
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          message={snackbar.message}
-        />
-      </Paper>
-    </Box>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={6}
+              label="내용"
+              name="content"
+              value={post.content}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <input type="file" onChange={handleFileChange} />
+          </Grid>
+          <Grid item xs={12}>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              게시글 작성
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+      />
+    </Paper>
   );
 };
 

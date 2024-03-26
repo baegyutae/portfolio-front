@@ -35,14 +35,18 @@ function FileUpload() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/posts", {
-        method: "POST",
-        body: formData,
-        headers: {
-          // 인증 토큰 포함
-          Authorization: token ? `Bearer ${token}` : undefined,
-        },
-      });
+      // 환경 변수를 사용하여 백엔드 주소 참조
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            // 'Authorization' 헤더는 'fetch'의 'headers' 옵션에서 직접 설정할 수 없는 경우가 있으므로, 조건부로 추가
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
 
       if (response.ok) {
         alert("게시글이 성공적으로 작성되었습니다.");

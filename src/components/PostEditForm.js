@@ -12,17 +12,17 @@ import {
 
 const PostEditForm = () => {
   const [post, setPost] = useState({ title: "", content: "" });
-  const [selectedFile, setSelectedFile] = useState(null); // 이미지 파일 상태 추가
+  const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const { postId } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 게시글 정보 로드
     const token = localStorage.getItem("token");
     setLoading(true);
-    fetch(`http://localhost:8080/api/posts/${postId}`, {
+    // 환경 변수를 사용하여 백엔드 주소 참조
+    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -71,7 +71,8 @@ const PostEditForm = () => {
       formData.append("file", selectedFile);
     }
 
-    fetch(`http://localhost:8080/api/posts/${postId}`, {
+    // 환경 변수를 사용하여 백엔드 주소 참조
+    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,

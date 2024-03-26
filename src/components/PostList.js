@@ -8,12 +8,16 @@ const PostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8080/api/posts", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // 환경 변수를 사용하여 백엔드 주소 참조
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setPosts(data); // 게시글 목록 상태 업데이트

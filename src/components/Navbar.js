@@ -9,6 +9,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token"); // 로컬 스토리지에서 token 삭제
+    alert("로그아웃 되었습니다."); // 사용자에게 로그아웃 피드백 제공
     navigate("/login"); // 로그인 페이지로 리다이렉션
   };
 

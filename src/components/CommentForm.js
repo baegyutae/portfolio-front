@@ -7,13 +7,14 @@ function CommentForm({ postId, onCommentPosted }) {
   const handleCommentChange = (e) => {
     setComment(e.target.value);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId"); // 로컬 스토리지에서 userId 가져오기
 
     try {
-      const url = `http://localhost:8080/api/posts/${postId}/comments?userId=${userId}`; // URL에 userId 쿼리 파라미터 추가
+      // 환경 변수를 사용하여 백엔드 주소 참조
+      const url = `${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}/comments`;
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -61,7 +62,6 @@ function CommentForm({ postId, onCommentPosted }) {
       </Grid>
     </Grid>
   );
-
 }
 
 export default CommentForm;

@@ -20,7 +20,7 @@ import {
 const PostDetail = () => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [comments, setComments] = useState([]); // 댓글 목록을 저장할 상태
+  const [comments, setComments] = useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const { postId } = useParams();
@@ -33,7 +33,7 @@ const PostDetail = () => {
     try {
       // 게시글 정보 로드
       const postResponse = await fetch(
-        `http://localhost:8080/api/posts/${postId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ const PostDetail = () => {
 
       // 댓글 목록 로드
       const commentsResponse = await fetch(
-        `http://localhost:8080/api/posts/${postId}/comments`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}/comments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ const PostDetail = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://localhost:8080/api/posts/${postId}/comments/${commentId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}/comments/${commentId}`,
         {
           method: "PATCH",
           headers: {
@@ -87,8 +87,7 @@ const PostDetail = () => {
 
       if (!response.ok) throw new Error("Failed to update comment.");
 
-      // 댓글 수정 후 댓글 목록을 새로고침
-      fetchPostDetails();
+      fetchPostDetails(); // 댓글 수정 후 댓글 목록을 새로고침
     } catch (error) {
       console.error("Error updating comment:", error);
     }
@@ -98,7 +97,7 @@ const PostDetail = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://localhost:8080/api/posts/${postId}/comments/${commentId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}/comments/${commentId}`,
         {
           method: "DELETE",
           headers: {
@@ -136,7 +135,7 @@ const PostDetail = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/posts/${postId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}`,
         {
           method: "DELETE",
           headers: {

@@ -20,17 +20,21 @@ function SignupForm() {
     event.preventDefault();
     setErrors({}); // 폼 제출 시 오류 초기화
     try {
-      const response = await fetch("http://localhost:8080/api/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
-      });
+      // 환경 변수를 사용하여 백엔드 주소 참조
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/user/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+          }),
+        }
+      );
       if (response.ok) {
         // 회원가입 성공 메시지 표시 후 로그인 페이지로 이동
         alert("회원가입 성공! 로그인 페이지로 이동합니다.");

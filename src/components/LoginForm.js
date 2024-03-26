@@ -10,16 +10,20 @@ function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+      // 환경 변수를 사용하여 백엔드 주소 참조
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/user/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        }
+      );
       const data = await response.json(); // 응답 데이터를 JSON 형태로 파싱
       if (response.ok) {
         // 응답 바디에서 토큰 추출하여 로컬 스토리지에 저장
