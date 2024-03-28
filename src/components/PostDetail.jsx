@@ -15,6 +15,7 @@ import {
   Box,
   Card,
   CardMedia,
+  Pagination, // Pagination 추가
 } from "@mui/material";
 
 const PostDetail = () => {
@@ -62,7 +63,7 @@ const PostDetail = () => {
       );
       const commentsData = await commentsResponse.json();
       if (commentsResponse.ok) {
-        setComments(commentsData);
+        setComments(commentsData.content);
         setTotalPages(commentsData.totalPages); // 총 페이지 수 업데이트
       } else {
         throw new Error("Failed to load comments");
@@ -121,7 +122,7 @@ const PostDetail = () => {
 
   useEffect(() => {
     fetchPostDetails();
-  }, [postId]);
+  }, [postId, currentPage]); // currentPage 추가
 
   const handleEdit = () => {
     navigate(`/posts/edit/${postId}`);
@@ -240,19 +241,13 @@ const PostDetail = () => {
         />
       </Box>
 
-      {/* 페이지네이션 컨트롤 렌더링 */}
+      {/* Pagination 컴포넌트 추가 */}
       <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <Button
-            key={index}
-            variant="outlined"
-            color={currentPage === index + 1 ? "primary" : "default"}
-            onClick={() => setCurrentPage(index + 1)}
-            sx={{ marginX: 0.5 }}
-          >
-            {index + 1}
-          </Button>
-        ))}
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={(event, page) => setCurrentPage(page)}
+        />
       </Box>
 
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
