@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import CommentForm from "../components/CommentForm";
-import CommentEditForm from "../components/CommentEditForm";
+import CommentForm from "./CommentForm";
+import CommentEditForm from "./CommentEditForm";
 import {
   Grid,
   Typography,
@@ -25,6 +25,8 @@ const PostDetail = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const { postId } = useParams();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const fetchPostDetails = async () => {
     setLoading(true);
@@ -47,9 +49,11 @@ const PostDetail = () => {
         throw new Error("Failed to load post");
       }
 
-      // 댓글 목록 로드
+      // 댓글 목록 로드, 페이지네이션 적용
       const commentsResponse = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/posts/${postId}/comments`,
+        `${
+          process.env.REACT_APP_API_BASE_URL
+        }/api/posts/${postId}/comments?page=${currentPage - 1}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,6 +63,7 @@ const PostDetail = () => {
       const commentsData = await commentsResponse.json();
       if (commentsResponse.ok) {
         setComments(commentsData);
+        setTotalPages(commentsData.totalPages); // 총 페이지 수 업데이트
       } else {
         throw new Error("Failed to load comments");
       }
@@ -233,6 +238,21 @@ const PostDetail = () => {
           postId={postId}
           onCommentPosted={() => fetchPostDetails(postId)} // 댓글 작성 후 댓글 목록을 새로고침
         />
+      </Box>
+
+      {/* 페이지네이션 컨트롤 렌더링 */}
+      <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <Button
+            key={index}
+            variant="outlined"
+            color={currentPage === index + 1 ? "primary" : "default"}
+            onClick={() => setCurrentPage(index + 1)}
+            sx={{ marginX: 0.5 }}
+          >
+            {index + 1}
+          </Button>
+        ))}
       </Box>
 
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
