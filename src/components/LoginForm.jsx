@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess, logout } from "../actions/userActions";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // 환경 변수를 사용하여 백엔드 주소 참조
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/user/login`,
         {
@@ -24,19 +26,17 @@ function LoginForm() {
           }),
         }
       );
-      const data = await response.json(); // 응답 데이터를 JSON 형태로 파싱
+      const data = await response.json();
       if (response.ok) {
-        // 응답 바디에서 토큰 추출하여 로컬 스토리지에 저장
-        const token = data.token;
-        localStorage.setItem("token", `${token}`);
-        navigate("/postlist"); // 로그인 성공 후 게시글 목록 페이지로 리다이렉션
+        dispatch(loginSuccess(data));
+        localStorage.setItem("token", data.token);
+        navigate("/postlist");
       } else {
-        // 로그인 실패 시 에러 메시지 표시
         throw new Error(data.error || "Login failed");
       }
     } catch (error) {
       console.error("Login failed:", error.message);
-      alert("Login failed: " + error.message); // 사용자에게 로그인 실패 메시지 표시
+      alert("Login failed: " + error.message);
     }
   };
 
