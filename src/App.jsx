@@ -1,4 +1,3 @@
-// App.js
 import React from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
@@ -8,7 +7,7 @@ import PostForm from "./components/PostForm";
 import PostDetail from "./components/PostDetail";
 import PostEditForm from "./components/PostEditForm";
 import FileUpload from "./components/FileUpload";
-import LoginForm from "./components/LoginForm";
+import LoginForm from "./pages/LoginPage/LoginForm";
 import SignupForm from "./components/SignupForm";
 import PrivateRoute from "./components/PrivateRoute";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
