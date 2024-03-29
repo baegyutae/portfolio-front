@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Grid, Typography, Box, Card, CardContent } from "@mui/material";
-import { fetchPosts } from "../../api/postApi";
+import { fetchPosts } from "../../api/postsApi";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
