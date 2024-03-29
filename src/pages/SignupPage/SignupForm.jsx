@@ -8,6 +8,12 @@ import {
   Box,
   FormHelperText,
 } from "@mui/material";
+import {
+  validateEmail,
+  validateUsername,
+  validatePassword,
+} from "../../utils/validation";
+import { signup as signupApi } from "../../api/userApi";
 
 function SignupForm() {
   const [formData, setFormData] = useState({
@@ -18,25 +24,21 @@ function SignupForm() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // 입력 필드 변경 시 유효성 검사를 수행하고 오류 상태를 업데이트하는 함수
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({ ...prevState, [name]: value }));
 
-    // 유효성 검사 로직
+    // 유효성 검사
     let error = "";
-    if (name === "email" && !/\S+@\S+\.\S+/.test(value)) {
+    if (name === "email" && !validateEmail(value)) {
       error = "올바른 이메일 형식이 아닙니다.";
-    } else if (name === "username" && !value.trim()) {
+    } else if (name === "username" && !validateUsername(value)) {
       error = "사용자 이름은 필수입니다.";
-    } else if (
-      name === "password" &&
-      !/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/.test(value)
-    ) {
+    } else if (name === "password" && !validatePassword(value)) {
       error =
         "비밀번호는 숫자, 소문자, 대문자, 특수문자를 포함하여 8자 이상이어야 합니다.";
     } else {
-      error = ""; // 유효성 검사를 통과했다면 오류 메시지를 비웁니다.
+      error = "";
     }
 
     setErrors((prevState) => ({ ...prevState, [name]: error }));
@@ -55,16 +57,7 @@ function SignupForm() {
     }
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/user/signup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await signupApi(formData);
       if (response.ok) {
         alert("회원가입 성공! 로그인 페이지로 이동합니다.");
         navigate("/login");
