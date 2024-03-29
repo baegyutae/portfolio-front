@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Grid,
@@ -9,71 +9,26 @@ import {
   Typography,
   Snackbar,
 } from "@mui/material";
+import usePostForm from "../hooks/usePostForm";
 
 const PostForm = () => {
-  const [post, setPost] = useState({ title: "", content: "" });
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPost((prevPost) => ({ ...prevPost, [name]: value }));
-  };
-
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const token = localStorage.getItem("token");
-
-    const formData = new FormData();
-    formData.append(
-      "postCreateDto",
-      new Blob([JSON.stringify({ title: post.title, content: post.content })], {
-        type: "application/json",
-      })
-    );
-    if (selectedFile) {
-      formData.append("file", selectedFile);
-    }
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/posts`,
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        setSnackbar({
-          open: true,
-          message: "게시글이 성공적으로 작성되었습니다.",
-        });
-        navigate("/postlist");
-      } else {
-        throw new Error("게시글 작성 실패");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setSnackbar({
-        open: true,
-        message: "게시글 작성 과정에서 오류가 발생했습니다.",
-      });
-    }
-  };
+  const {
+    post,
+    selectedFile,
+    snackbar,
+    handleChange,
+    handleFileChange,
+    handleSubmit,
+    setSnackbar,
+  } = usePostForm();
 
   return (
     <Paper elevation={3} sx={{ p: 4, margin: "auto", maxWidth: 600, mt: 4 }}>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <form
+        onSubmit={(e) => handleSubmit(e, navigate)}
+        encType="multipart/form-data"
+      >
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
