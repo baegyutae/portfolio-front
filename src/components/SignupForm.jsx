@@ -18,40 +18,41 @@ function SignupForm() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  const validateForm = () => {
-    let newErrors = {};
-    let formIsValid = true;
+  // 입력 필드 변경 시 유효성 검사를 수행하고 오류 상태를 업데이트하는 함수
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
 
-    // 이메일 유효성 검사
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "올바른 이메일 형식이 아닙니다.";
-      formIsValid = false;
-    }
-
-    // 사용자 이름 유효성 검사
-    if (!formData.username.trim()) {
-      newErrors.username = "사용자 이름은 필수입니다.";
-      formIsValid = false;
-    }
-
-    // 비밀번호 유효성 검사
-    if (
-      !/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/.test(
-        formData.password
-      )
+    // 유효성 검사 로직
+    let error = "";
+    if (name === "email" && !/\S+@\S+\.\S+/.test(value)) {
+      error = "올바른 이메일 형식이 아닙니다.";
+    } else if (name === "username" && !value.trim()) {
+      error = "사용자 이름은 필수입니다.";
+    } else if (
+      name === "password" &&
+      !/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/.test(value)
     ) {
-      newErrors.password =
+      error =
         "비밀번호는 숫자, 소문자, 대문자, 특수문자를 포함하여 8자 이상이어야 합니다.";
-      formIsValid = false;
+    } else {
+      error = ""; // 유효성 검사를 통과했다면 오류 메시지를 비웁니다.
     }
 
-    setErrors(newErrors);
+    setErrors((prevState) => ({ ...prevState, [name]: error }));
+  };
+
+  const validateForm = () => {
+    const formIsValid = Object.values(errors).every((x) => x === "");
     return formIsValid;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      alert("양식을 올바르게 채워주세요.");
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -75,11 +76,6 @@ function SignupForm() {
       console.error("Signup failed:", error);
       setErrors({ general: "네트워크 오류로 회원가입에 실패했습니다." });
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   return (
