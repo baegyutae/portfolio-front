@@ -1,9 +1,11 @@
 import React from "react";
 import { useAuthForm } from "../../hooks/userAuthForm";
+import { useNavigate } from "react-router-dom";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 
 function LoginForm() {
   const { formState, handleInputChange, handleLoginSubmit } = useAuthForm();
+  const navigate = useNavigate();
 
   return (
     <Container component="main" maxWidth="xs">
@@ -55,6 +57,14 @@ function LoginForm() {
             sx={{ mt: 3, mb: 2 }}
           >
             로그인
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 1, mb: 2 }}
+            onClick={() => navigate("/signup")}
+          >
+            회원가입
           </Button>
         </Box>
       </Box>
