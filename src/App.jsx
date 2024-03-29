@@ -9,7 +9,7 @@ import PostEditForm from "./components/PostEditForm";
 import FileUpload from "./components/FileUpload";
 import LoginForm from "./pages/LoginPage/LoginForm";
 import SignupForm from "./pages/SignupPage/SignupForm";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./routes/PrivateRoute";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store";
