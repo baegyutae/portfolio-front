@@ -10,17 +10,50 @@ import {
 } from "@mui/material";
 
 function SignupForm() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    let newErrors = {};
+    let formIsValid = true;
+
+    // 이메일 유효성 검사
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "올바른 이메일 형식이 아닙니다.";
+      formIsValid = false;
+    }
+
+    // 사용자 이름 유효성 검사
+    if (!formData.username.trim()) {
+      newErrors.username = "사용자 이름은 필수입니다.";
+      formIsValid = false;
+    }
+
+    // 비밀번호 유효성 검사
+    if (
+      !/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/.test(
+        formData.password
+      )
+    ) {
+      newErrors.password =
+        "비밀번호는 숫자, 소문자, 대문자, 특수문자를 포함하여 8자 이상이어야 합니다.";
+      formIsValid = false;
+    }
+
+    setErrors(newErrors);
+    return formIsValid;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrors({}); // 폼 제출 시 오류 초기화
+    if (!validateForm()) return;
+
     try {
-      // 환경 변수를 사용하여 백엔드 주소 참조
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/user/signup`,
         {
@@ -28,36 +61,25 @@ function SignupForm() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            username,
-            email,
-            password,
-          }),
+          body: JSON.stringify(formData),
         }
       );
       if (response.ok) {
-        // 회원가입 성공 메시지 표시 후 로그인 페이지로 이동
         alert("회원가입 성공! 로그인 페이지로 이동합니다.");
         navigate("/login");
       } else {
-        // 서버로부터 받은 오류 메시지 처리
         const errorData = await response.json();
-        if (errorData.errors) {
-          // 오류 메시지가 여러 개인 경우(예: Validation 오류)
-          const formattedErrors = {};
-          errorData.errors.forEach((error) => {
-            formattedErrors[error.field] = error.defaultMessage;
-          });
-          setErrors(formattedErrors);
-        } else {
-          // 단일 오류 메시지 처리(예: 사용자 정의 오류 메시지)
-          setErrors({ general: errorData.message });
-        }
+        setErrors({ general: errorData.message || "회원가입 실패" });
       }
     } catch (error) {
       console.error("Signup failed:", error);
       setErrors({ general: "네트워크 오류로 회원가입에 실패했습니다." });
     }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   return (
@@ -83,8 +105,8 @@ function SignupForm() {
             name="username"
             autoComplete="username"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={formData.username}
+            onChange={handleChange}
             error={!!errors.username}
             helperText={errors.username}
           />
@@ -96,10 +118,10 @@ function SignupForm() {
             label="이메일 주소"
             name="email"
             autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
             error={!!errors.email}
-            helperText={errors.email}
+            helperText={errors.email || "예: user@example.com"}
           />
           <TextField
             margin="normal"
@@ -110,10 +132,12 @@ function SignupForm() {
             type="password"
             id="password"
             autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
             error={!!errors.password}
-            helperText={errors.password}
+            helperText={
+              errors.password || "숫자, 대소문자, 특수문자 포함 8자 이상"
+            }
           />
           <Button
             type="submit"
