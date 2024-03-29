@@ -2,7 +2,7 @@ import React from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import Navbar from "./components/Navbar";
-import PostList from "./components/PostList";
+import PostList from "./pages/PostListPage/PostList";
 import PostForm from "./components/PostForm";
 import PostDetail from "./components/PostDetail";
 import PostEditForm from "./components/PostEditForm";
