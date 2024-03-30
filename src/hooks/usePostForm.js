@@ -1,51 +1,55 @@
 import { useState } from "react";
-import { submitPost } from "../api/postApi";
+import { createPost, updatePost } from "../api/postApi";
 
-const usePostForm = () => {
+const usePostForm = (postId) => {
   const [post, setPost] = useState({ title: "", content: "" });
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPost((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  const handleChange = (e) =>
+    setPost({ ...post, [e.target.name]: e.target.value });
+  const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
 
   const handleSubmit = async (e, navigate) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append(
       "postCreateDto",
-      new Blob([JSON.stringify(post)], { type: "application/json" })
+      new Blob(
+        [
+          JSON.stringify({
+            title: post.title,
+            content: post.content,
+          }),
+        ],
+        { type: "application/json" }
+      )
     );
     if (selectedFile) {
       formData.append("file", selectedFile);
     }
-
     try {
-      await submitPost(formData, localStorage.getItem("token"));
+      const response = postId
+        ? await updatePost(postId, formData)
+        : await createPost(formData);
       setSnackbar({
         open: true,
-        message: "게시글이 성공적으로 작성되었습니다.",
+        message: `게시글이 성공적으로 ${postId ? "수정" : "생성"}되었습니다.`,
       });
-      navigate("/postlist");
+      navigate(`/posts/${response.id || postId}`);
     } catch (error) {
-      console.error("Error:", error);
-      setSnackbar({
-        open: true,
-        message: "게시글 작성 과정에서 오류가 발생했습니다.",
-      });
+      console.error(error);
+      setSnackbar({ open: true, message: error.message });
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
     post,
     selectedFile,
+    loading,
     snackbar,
     handleChange,
     handleFileChange,
