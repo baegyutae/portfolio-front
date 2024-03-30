@@ -39,8 +39,7 @@ export const createPost = async (formData) => {
   return response.json();
 };
 
-export const updatePost = async (postId, formData) => {
-  const token = localStorage.getItem("token");
+export const updatePost = async (postId, formData, token) => {
   const response = await fetch(`${BASE_URL}/api/posts/${postId}`, {
     method: "PUT",
     body: formData,
@@ -51,8 +50,15 @@ export const updatePost = async (postId, formData) => {
   if (!response.ok) {
     throw new Error("게시글 수정에 실패했습니다.");
   }
-  return response.json();
+  
+  const text = await response.text();
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch (error) {
+    throw new Error("응답 파싱 중 오류가 발생했습니다.");
+  }
 };
+
 
 export const deletePost = async (postId) => {
   const token = localStorage.getItem("token");
