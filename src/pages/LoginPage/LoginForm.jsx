@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuthForm } from "../../hooks/userAuthForm";
+import { useAuthForm } from "../../hooks/useAuthForm";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 
