@@ -63,8 +63,8 @@ const PostDetail = () => {
       );
       const commentsData = await commentsResponse.json();
       if (commentsResponse.ok) {
-        setComments(commentsData.content);
-        setTotalPages(commentsData.totalPages); // 총 페이지 수 업데이트
+        setComments(commentsData.data.content);
+        setTotalPages(commentsData.data.totalPages);
       } else {
         throw new Error("Failed to load comments");
       }
