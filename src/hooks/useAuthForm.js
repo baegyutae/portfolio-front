@@ -31,14 +31,19 @@ export const useAuthForm = () => {
           }),
         }
       );
-      if (!response.ok) throw new Error("Login failed");
-      const data = await response.json();
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error?.message || "로그인 실패");
+      }
+
+      const { data } = await response.json();
       dispatch(loginSuccess(data));
       localStorage.setItem("token", data.token);
       navigate("/postlist");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed: " + error.message);
+      alert("로그인 실패: " + error.message);
     }
   };
 
