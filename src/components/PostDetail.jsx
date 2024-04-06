@@ -44,10 +44,10 @@ const PostDetail = () => {
         }
       );
       const postData = await postResponse.json();
-      if (postResponse.ok) {
-        setPost(postData);
+      if (postResponse.ok && postData.success) {
+        setPost(postData.data);
       } else {
-        throw new Error("Failed to load post");
+        throw new Error(postData.error || "Failed to load post");
       }
 
       // 댓글 목록 로드, 페이지네이션 적용
