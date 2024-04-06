@@ -57,17 +57,12 @@ function SignupForm() {
     }
 
     try {
-      const response = await signupApi(formData);
-      if (response.ok) {
-        alert("회원가입 성공! 로그인 페이지로 이동합니다.");
-        navigate("/login");
-      } else {
-        const errorData = await response.json();
-        setErrors({ general: errorData.message || "회원가입 실패" });
-      }
+      await signupApi(formData);
+      alert("회원가입 성공! 로그인 페이지로 이동합니다.");
+      navigate("/login");
     } catch (error) {
       console.error("Signup failed:", error);
-      setErrors({ general: "네트워크 오류로 회원가입에 실패했습니다." });
+      setErrors({ general: error.message });
     }
   };
 
