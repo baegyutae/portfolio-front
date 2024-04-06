@@ -9,5 +9,9 @@ export const signup = async (formData) => {
       body: JSON.stringify(formData),
     }
   );
-  return response;
+  const jsonResponse = await response.json();
+  if (!response.ok) {
+    throw new Error(jsonResponse.error?.message || "회원가입 실패");
+  }
+  return jsonResponse.data;
 };
